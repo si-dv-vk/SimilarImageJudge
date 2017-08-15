@@ -1,3 +1,7 @@
+package vhky
+
+import vhky.application.ApplicationMain
+
 /**
  * No Description
  *
@@ -7,5 +11,5 @@
 
 fun main(args : Array<String>)
 {
-	println("Fuck You")
+	ApplicationMain.launch(args)
 }
