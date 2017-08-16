@@ -1,5 +1,8 @@
 package vhky.algorithm.data
 
+import javafx.scene.image.Image
+import javafx.scene.image.WritableImage
+
 /**
  * Grey scale collection
  *
@@ -8,6 +11,20 @@ package vhky.algorithm.data
  */
 data class ImageData(private val data : DoubleArray, val size : ImageSize) : Iterable<Double>
 {
+	companion object
+	{
+		fun fromImage(image : Image) : ImageData
+		{
+			val size = ImageSize(image.width.toInt(), image.height.toInt())
+			val data = DoubleArray(size.size)
+			val reader = image.pixelReader
+			size.forEach { data[it.index] = reader.getArgb(it.x, it.y).gray }
+			return ImageData(data, size)
+		}
+		private val Int.gray get() = (this ushr 16 and 0xFF) * 0.2126 + (this ushr 8 and 0xFF) * 0.7152 + (this and 0xFF) * 0.0722
+		val Double.argb get() = Math.round(this).toInt().let { gray -> (0..2).map { gray shl it }.sum() or (0xFF shl 0x18) }.toInt()
+	}
+	fun toImage() : Image = WritableImage(size.width, size.height).apply { size.forEach { pixelWriter.setArgb(it.x, it.y, data[it.index].argb) } }
 	init
 	{
 		require(data.size == size.size)
